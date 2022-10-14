@@ -1,1 +1,14 @@
+version: 2.1
 
+workflows:
+  test-deploy:
+    jobs:
+      - test
+
+jobs:
+  test:
+    docker:
+      - image: cimg/gcp:2022.08.1
+    steps:
+      - checkout
+      - run: echo "Do things"
