@@ -1,11 +1,15 @@
 version: 2.1
 
 workflows:
-  test-deploy:
+  build-test-and-deploy:
     jobs:
       - test
-      - build
-      
+      - test1:
+          requires:
+            - test
+      - build:
+          requires:
+            - test1
 jobs:
   test:
     docker:
@@ -13,13 +17,7 @@ jobs:
     steps:
       - checkout
       - run: echo "Do things"
-  build:
-    docker:
-      - image: cimg/node:16.13.1-browsers
-        auth:
-          username: mydockerhub-user
-          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
-    steps:
+  test1:
       - checkout
       - run: mkdir test-reports
       - run:
@@ -29,3 +27,12 @@ jobs:
           name: Start Selenium
           command: java -jar selenium-server-standalone-3.5.3.jar -log test-reports/selenium.log
           background: true
+  build:
+    docker:
+      - image: cimg/node:16.13.1-browsers
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+    steps:
+      - checkout
+      - run: echo "running fine"
