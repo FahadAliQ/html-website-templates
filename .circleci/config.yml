@@ -6,7 +6,7 @@ orbs:
 executors:
   docker-publisher:
     docker:
-      - image: circleci/golang:latest
+      - image: cimg/node:16.13.1-browsers
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -24,12 +24,6 @@ jobs:
       executor: docker-publisher
       steps:
         - checkout
-        - build:
-            docker:
-              - image: cimg/node:16.13.1-browsers
-                auth:
-                  username: $DOCKERHUB_USERNAME
-                  password: $DOCKERHUB_PASSWORD
     deploy:
       executor: gcp-cli/default
       steps:
