@@ -6,7 +6,7 @@ orbs:
 executors:
   docker-publisher:
     docker:
-      - image: circleci/golang:latest
+      - image: cimg/node:16.13.1-browsers
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -20,21 +20,10 @@ jobs:
       executor: python-linter
       steps:
       - checkout
-      - run:
-          name: check code
-          command: |
-            python -m pip install pylint && pylint --fail-under=7 --disable=import-error app.py
     build_and_publish:
       executor: docker-publisher
       steps:
         - checkout
-        - setup_remote_docker
-        - run:
-            name: Publish Docker Image to Docker Hub
-            command: |
-              echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-              docker build -t "$IMAGE_NAME" .
-              docker push "$IMAGE_NAME":latest
     deploy:
       executor: gcp-cli/default
       steps:
@@ -43,7 +32,7 @@ jobs:
       - run:
           name: deploy service
           command: |
-            export cmd='sudo docker stop $(docker ps -a -q) || true && sudo docker rm $(docker ps -a -q) || true && docker image prune -a -f || true && docker run -d -p 80:5000'
+            export cmd='sudo docker stop $(docker ps -a -q) || true && sudo docker rm $(docker ps -a -q) || true && docker image prune -a -f || true && docker run -d ->
             gcloud --quiet compute ssh  "$GCE_INSTANCE_NAME" --tunnel-through-iap --command="$cmd $IMAGE_NAME"
 workflows:
   version: 2
@@ -56,3 +45,4 @@ workflows:
        - deploy:
           requires:
             - build_and_publish
+
