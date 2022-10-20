@@ -20,10 +20,7 @@ jobs:
       executor: python-linter
       steps:
       - checkout
-      - run:
-          name: check code
-          command: |
-            python -m pip install pylint && pylint --fail-under=7 --disable=import-error app.py
+      - run "Do things"
     build_and_publish:
       executor: docker-publisher
       steps:
