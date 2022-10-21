@@ -25,8 +25,18 @@ jobs:
       steps:
         - checkout
     deploy:
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+    steps:
+      - run: |
+          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=key.json
+          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
       executor: gcp-cli/default
-      steps:
       - gcp-cli/install
       - gcp-cli/initialize
       - run:
