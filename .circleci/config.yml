@@ -32,7 +32,6 @@ jobs:
       - run:
           name: deploy service
           command: |
-            export cmd='sudo docker stop $(docker ps -a -q) || true && sudo docker rm $(docker ps -a -q) || true && docker image prune -a -f || true && docker run -d ->
             gcloud --quiet compute ssh  "$GCE_INSTANCE_NAME" --tunnel-through-iap --command="$cmd $IMAGE_NAME"
 workflows:
   version: 2
