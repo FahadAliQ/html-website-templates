@@ -24,6 +24,13 @@ jobs:
       executor: docker-publisher
       steps:
         - checkout
+        - setup_remote_docker
+        - run:
+            name: Publish Docker Image to Docker Hub
+            command: |
+              echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+              docker build -t "$IMAGE_NAME" .
+              docker push "$IMAGE_NAME":latest
     deploy:
       executor: gcp-cli/default
       steps:
@@ -32,7 +39,8 @@ jobs:
       - run:
           name: deploy service
           command: |
-            gcloud --quiet compute ssh  "$GCE_INSTANCE_NAME" --tunnel-through-iap --command="docker pull google/cloud-sdk:latest"
+	    export cmd='sudo docker stop $(docker ps -a -q) || true && sudo docker rm $(docker ps -a -q) || true && docker image prune -a -f || true && docker run -d -p 80:5000'
+            gcloud --quiet compute ssh  "$GCE_INSTANCE_NAME" --tunnel-through-iap --command="$cmd $IMAGE_NAME"
 workflows:
   version: 2
   test-build-deploy:
