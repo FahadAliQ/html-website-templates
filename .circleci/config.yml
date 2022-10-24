@@ -32,7 +32,7 @@ jobs:
       - run:
           name: deploy service
           command: |
-            gcloud --quiet compute ssh  "$GCE_INSTANCE_NAME" --tunnel-through-iap --command="$cmd $IMAGE_NAME"
+            gcloud --quiet compute ssh  "$GCE_INSTANCE_NAME" --tunnel-through-iap --command="docker pull google/cloud-sdk:latest"
 workflows:
   version: 2
   test-build-deploy:
